@@ -1,0 +1,233 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Length 3622 >>
+stream
+q
+BT /F2 18 Tf 42 800 Td (Dockerfile FastAPI - Explicacion y Comandos Utiles) Tj ET
+BT /F1 10 Tf 42 770 Td (Guia practica para entender, construir, ejecutar, probar y depurar una aplicacion FastAPI) Tj ET
+BT /F1 10 Tf 42 756 Td (empaquetada en Docker.) Tj ET
+BT /F2 15 Tf 42 739 Td (1. Dockerfile comentado) Tj ET
+BT /F3 8 Tf 42 712 Td (# Imagen base oficial de Python.) Tj ET
+BT /F3 8 Tf 42 701 Td (# La variante slim es mas liviana que la imagen completa.) Tj ET
+BT /F3 8 Tf 42 690 Td (FROM python:3.13-slim) Tj ET
+BT /F3 8 Tf 42 679 Td () Tj ET
+BT /F3 8 Tf 42 668 Td (# Directorio de trabajo dentro del contenedor.) Tj ET
+BT /F3 8 Tf 42 657 Td (WORKDIR /app) Tj ET
+BT /F3 8 Tf 42 646 Td () Tj ET
+BT /F3 8 Tf 42 635 Td (# Evita generar archivos .pyc y carpetas __pycache__.) Tj ET
+BT /F3 8 Tf 42 624 Td (ENV PYTHONDONTWRITEBYTECODE=1) Tj ET
+BT /F3 8 Tf 42 613 Td () Tj ET
+BT /F3 8 Tf 42 602 Td (# Permite ver logs en tiempo real con docker logs.) Tj ET
+BT /F3 8 Tf 42 591 Td (ENV PYTHONUNBUFFERED=1) Tj ET
+BT /F3 8 Tf 42 580 Td () Tj ET
+BT /F3 8 Tf 42 569 Td (# Instala curl y limpia cache de apt para reducir peso.) Tj ET
+BT /F3 8 Tf 42 558 Td (RUN apt-get update && apt-get install -y --no-install-recommends \\) Tj ET
+BT /F3 8 Tf 42 547 Td (    curl \\) Tj ET
+BT /F3 8 Tf 42 536 Td (    && rm -rf /var/lib/apt/lists/*) Tj ET
+BT /F3 8 Tf 42 525 Td () Tj ET
+BT /F3 8 Tf 42 514 Td (# Copia primero dependencias para aprovechar cache de Docker.) Tj ET
+BT /F3 8 Tf 42 503 Td (COPY requirements.txt .) Tj ET
+BT /F3 8 Tf 42 492 Td () Tj ET
+BT /F3 8 Tf 42 481 Td (# Instala dependencias Python sin cache.) Tj ET
+BT /F3 8 Tf 42 470 Td (RUN pip install --no-cache-dir --upgrade pip \\) Tj ET
+BT /F3 8 Tf 42 459 Td (    && pip install --no-cache-dir -r requirements.txt) Tj ET
+BT /F3 8 Tf 42 448 Td () Tj ET
+BT /F3 8 Tf 42 437 Td (# Copia el codigo completo de la aplicacion.) Tj ET
+BT /F3 8 Tf 42 426 Td (COPY . .) Tj ET
+BT /F3 8 Tf 42 415 Td () Tj ET
+BT /F3 8 Tf 42 404 Td (# Elimina __pycache__ que venga desde el host.) Tj ET
+BT /F3 8 Tf 42 393 Td (RUN find . -type d -name "__pycache__" -exec rm -rf {} + || true) Tj ET
+BT /F3 8 Tf 42 382 Td () Tj ET
+BT /F3 8 Tf 42 371 Td (# Documenta que la app escucha en el puerto 8000.) Tj ET
+BT /F3 8 Tf 42 360 Td (EXPOSE 8000) Tj ET
+BT /F3 8 Tf 42 349 Td () Tj ET
+BT /F3 8 Tf 42 338 Td (# Levanta FastAPI con Uvicorn.) Tj ET
+BT /F3 8 Tf 42 327 Td (# app.main:app = archivo app/main.py, variable app.) Tj ET
+BT /F3 8 Tf 42 316 Td (# 0.0.0.0 permite acceso desde fuera del contenedor.) Tj ET
+BT /F3 8 Tf 42 305 Td (CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]) Tj ET
+BT /F2 15 Tf 42 286 Td (2. Build y ejecucion) Tj ET
+BT /F3 8 Tf 42 259 Td (# Construir imagen) Tj ET
+BT /F3 8 Tf 42 248 Td (docker build -t fastapi-sqlite-demo .) Tj ET
+BT /F3 8 Tf 42 237 Td () Tj ET
+BT /F3 8 Tf 42 226 Td (# Ejecutar en primer plano) Tj ET
+BT /F3 8 Tf 42 215 Td (docker run --name fastapi-demo -p 8000:8000 fastapi-sqlite-demo) Tj ET
+BT /F3 8 Tf 42 204 Td () Tj ET
+BT /F3 8 Tf 42 193 Td (# Ejecutar en segundo plano) Tj ET
+BT /F3 8 Tf 42 182 Td (docker run -d --name fastapi-demo -p 8000:8000 fastapi-sqlite-demo) Tj ET
+BT /F3 8 Tf 42 171 Td () Tj ET
+BT /F3 8 Tf 42 160 Td (# Ver contenedores activos) Tj ET
+BT /F3 8 Tf 42 149 Td (docker ps) Tj ET
+BT /F3 8 Tf 42 138 Td () Tj ET
+BT /F3 8 Tf 42 127 Td (# Ver logs en vivo) Tj ET
+BT /F3 8 Tf 42 116 Td (docker logs -f fastapi-demo) Tj ET
+BT /F3 8 Tf 42 105 Td () Tj ET
+BT /F3 8 Tf 42 94 Td (# Detener y eliminar) Tj ET
+BT /F3 8 Tf 42 83 Td (docker stop fastapi-demo) Tj ET
+BT /F3 8 Tf 42 72 Td (docker rm fastapi-demo) Tj ET
+Q
+endstream
+endobj
+5 0 obj
+<< /Length 3138 >>
+stream
+q
+BT /F2 15 Tf 42 800 Td (3. Probar la API desde navegador) Tj ET
+BT /F3 8 Tf 42 773 Td (Swagger UI:) Tj ET
+BT /F3 8 Tf 42 762 Td (http://localhost:8000/docs) Tj ET
+BT /F3 8 Tf 42 751 Td () Tj ET
+BT /F3 8 Tf 42 740 Td (Redoc:) Tj ET
+BT /F3 8 Tf 42 729 Td (http://localhost:8000/redoc) Tj ET
+BT /F3 8 Tf 42 718 Td () Tj ET
+BT /F3 8 Tf 42 707 Td (OpenAPI JSON:) Tj ET
+BT /F3 8 Tf 42 696 Td (http://localhost:8000/openapi.json) Tj ET
+BT /F2 15 Tf 42 677 Td (4. Pruebas con curl) Tj ET
+BT /F3 8 Tf 42 650 Td (# GET simple) Tj ET
+BT /F3 8 Tf 42 639 Td (curl -i http://localhost:8000/) Tj ET
+BT /F3 8 Tf 42 628 Td () Tj ET
+BT /F3 8 Tf 42 617 Td (# Listar usuarios, si existe ese endpoint) Tj ET
+BT /F3 8 Tf 42 606 Td (curl -i http://localhost:8000/users) Tj ET
+BT /F3 8 Tf 42 595 Td () Tj ET
+BT /F3 8 Tf 42 584 Td (# Crear usuario) Tj ET
+BT /F3 8 Tf 42 573 Td (curl -i -X POST http://localhost:8000/users \\) Tj ET
+BT /F3 8 Tf 42 562 Td (  -H "Content-Type: application/json" \\) Tj ET
+BT /F3 8 Tf 42 551 Td (  -d '{"name":"Juan","email":"juan@example.com"}') Tj ET
+BT /F3 8 Tf 42 540 Td () Tj ET
+BT /F3 8 Tf 42 529 Td (# Consultar usuario por ID) Tj ET
+BT /F3 8 Tf 42 518 Td (curl -i http://localhost:8000/users/1) Tj ET
+BT /F3 8 Tf 42 507 Td () Tj ET
+BT /F3 8 Tf 42 496 Td (# Actualizar usuario, si tu API usa PUT) Tj ET
+BT /F3 8 Tf 42 485 Td (curl -i -X PUT http://localhost:8000/users/1 \\) Tj ET
+BT /F3 8 Tf 42 474 Td (  -H "Content-Type: application/json" \\) Tj ET
+BT /F3 8 Tf 42 463 Td (  -d '{"name":"Juan Actualizado","email":"juan.actualizado@example.com"}') Tj ET
+BT /F3 8 Tf 42 452 Td () Tj ET
+BT /F3 8 Tf 42 441 Td (# Eliminar usuario) Tj ET
+BT /F3 8 Tf 42 430 Td (curl -i -X DELETE http://localhost:8000/users/1) Tj ET
+BT /F3 8 Tf 42 419 Td () Tj ET
+BT /F3 8 Tf 42 408 Td (# Formatear OpenAPI JSON) Tj ET
+BT /F3 8 Tf 42 397 Td (curl -s http://localhost:8000/openapi.json | python -m json.tool) Tj ET
+BT /F2 15 Tf 42 378 Td (5. Pruebas con HTTPie) Tj ET
+BT /F3 8 Tf 42 351 Td (# Instalar HTTPie) Tj ET
+BT /F3 8 Tf 42 340 Td (python -m pip install --user httpie) Tj ET
+BT /F3 8 Tf 42 329 Td () Tj ET
+BT /F3 8 Tf 42 318 Td (# GET) Tj ET
+BT /F3 8 Tf 42 307 Td (http GET :8000/users) Tj ET
+BT /F3 8 Tf 42 296 Td () Tj ET
+BT /F3 8 Tf 42 285 Td (# POST) Tj ET
+BT /F3 8 Tf 42 274 Td (http POST :8000/users name="Juan" email="juan@example.com") Tj ET
+BT /F3 8 Tf 42 263 Td () Tj ET
+BT /F3 8 Tf 42 252 Td (# GET por ID) Tj ET
+BT /F3 8 Tf 42 241 Td (http GET :8000/users/1) Tj ET
+BT /F3 8 Tf 42 230 Td () Tj ET
+BT /F3 8 Tf 42 219 Td (# DELETE) Tj ET
+BT /F3 8 Tf 42 208 Td (http DELETE :8000/users/1) Tj ET
+BT /F2 15 Tf 42 189 Td (6. Entrar al contenedor) Tj ET
+BT /F3 8 Tf 42 162 Td (# Entrar con sh, porque python:slim normalmente no trae bash) Tj ET
+BT /F3 8 Tf 42 151 Td (docker exec -it fastapi-demo sh) Tj ET
+BT /F3 8 Tf 42 140 Td () Tj ET
+BT /F3 8 Tf 42 129 Td (# Ver archivos) Tj ET
+BT /F3 8 Tf 42 118 Td (ls -lah /app) Tj ET
+BT /F3 8 Tf 42 107 Td () Tj ET
+BT /F3 8 Tf 42 96 Td (# Ver version Python) Tj ET
+BT /F3 8 Tf 42 85 Td (python --version) Tj ET
+BT /F3 8 Tf 42 74 Td () Tj ET
+BT /F3 8 Tf 42 63 Td (# Ver dependencias) Tj ET
+Q
+endstream
+endobj
+6 0 obj
+<< /Length 2773 >>
+stream
+q
+BT /F3 8 Tf 42 800 Td (pip list) Tj ET
+BT /F3 8 Tf 42 789 Td () Tj ET
+BT /F3 8 Tf 42 778 Td (# Probar import de la app) Tj ET
+BT /F3 8 Tf 42 767 Td (python -c "from app.main import app; print\(app.title\)") Tj ET
+BT /F2 15 Tf 42 748 Td (7. SQLite y persistencia) Tj ET
+BT /F3 8 Tf 42 721 Td (# Si app.db queda dentro del contenedor, se pierde al eliminarlo.) Tj ET
+BT /F3 8 Tf 42 710 Td (# Montar archivo SQLite desde el host:) Tj ET
+BT /F3 8 Tf 42 699 Td () Tj ET
+BT /F3 8 Tf 42 688 Td (docker run -d --name fastapi-demo \\) Tj ET
+BT /F3 8 Tf 42 677 Td (  -p 8000:8000 \\) Tj ET
+BT /F3 8 Tf 42 666 Td (  -v "$PWD/app.db:/app/app.db" \\) Tj ET
+BT /F3 8 Tf 42 655 Td (  fastapi-sqlite-demo) Tj ET
+BT /F3 8 Tf 42 644 Td () Tj ET
+BT /F3 8 Tf 42 633 Td (# Alternativa: montar carpeta completa de datos) Tj ET
+BT /F3 8 Tf 42 622 Td (mkdir -p ./data) Tj ET
+BT /F3 8 Tf 42 611 Td (docker run -d --name fastapi-demo \\) Tj ET
+BT /F3 8 Tf 42 600 Td (  -p 8000:8000 \\) Tj ET
+BT /F3 8 Tf 42 589 Td (  -v "$PWD/data:/app/data" \\) Tj ET
+BT /F3 8 Tf 42 578 Td (  fastapi-sqlite-demo) Tj ET
+BT /F2 15 Tf 42 559 Td (8. Diagnostico y limpieza) Tj ET
+BT /F3 8 Tf 42 532 Td (# Consumo de recursos) Tj ET
+BT /F3 8 Tf 42 521 Td (docker stats fastapi-demo) Tj ET
+BT /F3 8 Tf 42 510 Td () Tj ET
+BT /F3 8 Tf 42 499 Td (# Inspeccionar configuracion) Tj ET
+BT /F3 8 Tf 42 488 Td (docker inspect fastapi-demo) Tj ET
+BT /F3 8 Tf 42 477 Td () Tj ET
+BT /F3 8 Tf 42 466 Td (# Procesos dentro del contenedor) Tj ET
+BT /F3 8 Tf 42 455 Td (docker exec -it fastapi-demo ps aux) Tj ET
+BT /F3 8 Tf 42 444 Td () Tj ET
+BT /F3 8 Tf 42 433 Td (# Reiniciar) Tj ET
+BT /F3 8 Tf 42 422 Td (docker restart fastapi-demo) Tj ET
+BT /F3 8 Tf 42 411 Td () Tj ET
+BT /F3 8 Tf 42 400 Td (# Limpiar contenedores detenidos) Tj ET
+BT /F3 8 Tf 42 389 Td (docker container prune) Tj ET
+BT /F3 8 Tf 42 378 Td () Tj ET
+BT /F3 8 Tf 42 367 Td (# Limpiar imagenes sin uso) Tj ET
+BT /F3 8 Tf 42 356 Td (docker image prune) Tj ET
+BT /F3 8 Tf 42 345 Td () Tj ET
+BT /F3 8 Tf 42 334 Td (# Limpiar todo lo no usado, usar con cuidado) Tj ET
+BT /F3 8 Tf 42 323 Td (docker system prune -a) Tj ET
+BT /F2 15 Tf 42 304 Td (9. Recomendaciones practicas) Tj ET
+BT /F1 10 Tf 42 277 Td (- Crear .dockerignore para excluir .venv, .git, __pycache__, archivos temporales y datos) Tj ET
+BT /F1 10 Tf 42 263 Td (pesados.) Tj ET
+BT /F1 10 Tf 42 246 Td (- No guardar secretos dentro de la imagen. Usar variables de entorno o gestor de secretos.) Tj ET
+BT /F1 10 Tf 42 229 Td (- Para produccion real con alta concurrencia, preferir PostgreSQL sobre SQLite.) Tj ET
+BT /F1 10 Tf 42 212 Td (- Agregar HEALTHCHECK si el orquestador o plataforma lo aprovecha.) Tj ET
+BT /F1 10 Tf 42 195 Td (- Para multiples workers, evaluar Gunicorn con UvicornWorker.) Tj ET
+Q
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 4 0 R >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 5 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 6 0 R >>
+endobj
+10 0 obj
+<< /Type /Pages /Kids [7 0 R 8 0 R 9 0 R] /Count 3 >>
+endobj
+11 0 obj
+<< /Type /Catalog /Pages 10 0 R >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000000228 00000 n 
+0000003901 00000 n 
+0000007090 00000 n 
+0000009914 00000 n 
+0000010061 00000 n 
+0000010208 00000 n 
+0000010355 00000 n 
+0000010425 00000 n 
+trailer << /Size 12 /Root 11 0 R >>
+startxref
+10476
+%%EOF
