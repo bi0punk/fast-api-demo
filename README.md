@@ -1,31 +1,30 @@
-# FastAPI Learning API SQLite
+# fast-api-demo
 
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+API didáctica con FastAPI y SQLite: CRUD completo de usuarios con validaciones, Swagger/ReDoc automático y descripción lista para enseñar. Incluye Docker, SQLAlchemy y pruebas.
+
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0%2B-D71F00)](https://www.sqlalchemy.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
-[![CI](https://github.com/drbash/fast-api-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/drbash/fast-api-demo/actions)
-
-Proyecto didáctico listo para enseñar FastAPI con SQLite, Swagger, SQLAlchemy y pruebas desde Linux. CRUD completo de usuarios con validaciones y documentación automática.
+[![CI](https://github.com/bi0punk/fast-api-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/bi0punk/fast-api-demo/actions)
+[![Licencia](https://img.shields.io/badge/Licencia-MIT-yellow)](LICENSE)
 
 ## Contenido
 
-- [Características](#caracter%C3%ADsticas)
+- [Características](#características)
+- [Arquitectura](#arquitectura)
 - [Stack](#stack)
-- [Estructura](#estructura)
-- [Requisitos](#requisitos)
-- [Instalación](#instalaci%C3%B3n)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Instalación](#instalación)
 - [Uso](#uso)
 - [Endpoints](#endpoints)
 - [Ejemplos con curl](#ejemplos-con-curl)
 - [Ejemplos con HTTPie](#ejemplos-con-httpie)
-- [Tests](#tests)
-- [Configuración](#configuraci%C3%B3n)
-- [CI/CD](#cicd)
 - [Docker](#docker)
 - [SQLite](#revisar-sqlite)
-- [Limitaciones / Roadmap](#limitaciones--roadmap)
+- [Configuración](#configuración)
+- [Tests / CI](#tests--ci)
+- [Roadmap](#roadmap)
 - [Licencia](#licencia)
 
 ## Características
@@ -33,9 +32,28 @@ Proyecto didáctico listo para enseñar FastAPI con SQLite, Swagger, SQLAlchemy 
 - **CRUD completo**: crear, listar, obtener, actualizar y eliminar usuarios
 - **Documentación automática**: Swagger UI + ReDoc
 - **Validaciones**: Pydantic schemas con tipos y constraints
-- **SQLAlchemy ORM**: base de datos SQLite con migrations automáticas
-- **Docker listo**: imagen multi-stage optimizada
+- **SQLAlchemy ORM**: base de datos SQLite con creación automática de tablas
+- **Docker listo**: imagen optimizada
 - **Script de pruebas**: `scripts_test.sh` para testeo automatizado con curl
+
+## Arquitectura
+
+```mermaid
+sequenceDiagram
+    participant CL as Cliente (curl / HTTPie)
+    participant API as FastAPI app.main
+    participant ORM as SQLAlchemy (app.database)
+    participant DB as SQLite (app.db)
+
+    CL->>API: GET/POST/PUT/DELETE /users
+    API->>ORM: dependencia get_db (sesión por request)
+    ORM->>DB: query / insert / update / delete
+    DB-->>ORM: rows
+    ORM-->>API: objetos User
+    API-->>CL: JSON validado (schemas Pydantic)
+```
+
+Flujo: el cliente interactúa con los routers de FastAPI; cada request abre una sesión SQLAlchemy a la base de datos SQLite `app.db` y las respuestas se validan con schemas Pydantic.
 
 ## Stack
 
@@ -46,10 +64,10 @@ Proyecto didáctico listo para enseñar FastAPI con SQLite, Swagger, SQLAlchemy 
 | DB | SQLite |
 | Validación | Pydantic 2.0+ |
 | Servidor | Uvicorn |
-| Contenedor | Docker multi-stage |
+| Contenedor | Docker |
 | Testing | pytest + httpx |
 
-## Estructura
+## Estructura del repositorio
 
 ```
 fast-api-demo/
@@ -74,15 +92,12 @@ fast-api-demo/
 └── README.md
 ```
 
-## Requisitos
-
-- Python 3.11+
-- pip
-
 ## Instalación
 
+Requisitos: Python 3.11+ y pip.
+
 ```bash
-git clone https://github.com/drbash/fast-api-demo.git
+git clone https://github.com/bi0punk/fast-api-demo.git
 cd fast-api-demo
 python3 -m venv venv
 source venv/bin/activate
@@ -161,7 +176,9 @@ http PUT :8000/users/1 age:=26
 http DELETE :8000/users/1
 ```
 
-## Tests
+## Tests / CI
+
+CI: GitHub Actions ejecuta lint (Ruff) y tests (pytest) en cada push/PR a main/master.
 
 ```bash
 pip install pytest httpx
@@ -174,18 +191,6 @@ pytest tests/ -v
 chmod +x scripts_test.sh
 ./scripts_test.sh    # Requiere API levantada
 ```
-
-## Configuración
-
-Variables de entorno (ver `.env.example`):
-
-| Variable | Default | Descripción |
-|---|---|---|
-| `DATABASE_URL` | `sqlite:///app.db` | URL de conexión SQLite |
-
-## CI/CD
-
-GitHub Actions ejecuta lint (Ruff) y tests (pytest) en cada push/PR a main/master.
 
 ## Docker
 
@@ -205,7 +210,15 @@ SELECT * FROM users;
 .exit
 ```
 
-## Limitaciones / Roadmap
+## Configuración
+
+Variables de entorno (ver `.env.example`):
+
+| Variable | Default | Descripción |
+|---|---|---|
+| `DATABASE_URL` | `sqlite:///app.db` | URL de conexión SQLite |
+
+## Roadmap
 
 - [x] CRUD usuarios con FastAPI + SQLAlchemy
 - [x] Documentación Swagger/ReDoc automática
@@ -218,4 +231,4 @@ SELECT * FROM users;
 
 ## Licencia
 
-MIT
+MIT — ver [LICENSE](LICENSE).
