@@ -13,3 +13,6 @@ venv/
 .idea/
 .DS_Store
 *.log
+*.db
+*.sqlite3
+instance/
