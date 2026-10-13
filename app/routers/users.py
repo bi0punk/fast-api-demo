@@ -1,18 +1,19 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import User
-from app.schemas import UserCreate, UserUpdate, UserResponse
+from app.schemas import UserCreate, UserResponse, UserUpdate
 
-router = APIRouter(
-    prefix="/users",
-    tags=["Users"]
-)
+router = APIRouter(prefix="/users", tags=["Users"])
+
+DbSession = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/", response_model=list[UserResponse])
-def get_users(db: Session = Depends(get_db)):
+def get_users(db: DbSession):
     """
     Lista todos los usuarios registrados en SQLite.
     """
@@ -20,7 +21,7 @@ def get_users(db: Session = Depends(get_db)):
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(user_id: int, db: DbSession):
     """
     Obtiene un usuario por ID.
 
@@ -29,16 +30,13 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
     return user
 
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: UserCreate, db: DbSession):
     """
     Crea un usuario nuevo.
 
@@ -48,15 +46,10 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="El email ya está registrado"
+            status_code=status.HTTP_409_CONFLICT, detail="El email ya está registrado"
         )
 
-    new_user = User(
-        name=user.name,
-        email=user.email,
-        age=user.age
-    )
+    new_user = User(name=user.name, email=user.email, age=user.age)
 
     db.add(new_user)
     db.commit()
@@ -66,7 +59,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=UserResponse)
-def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_update: UserUpdate, db: DbSession):
     """
     Actualiza un usuario existente.
 
@@ -75,10 +68,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
     update_data = user_update.model_dump(exclude_unset=True)
 
@@ -92,22 +82,16 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
 
 
 @router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(user_id: int, db: DbSession):
     """
     Elimina un usuario por ID.
     """
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
     db.delete(user)
     db.commit()
 
-    return {
-        "message": "Usuario eliminado correctamente",
-        "user_id": user_id
-    }
+    return {"message": "Usuario eliminado correctamente", "user_id": user_id}

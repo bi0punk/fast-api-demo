@@ -9,7 +9,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="FastAPI Learning API SQLite",
     description="API didáctica con FastAPI, Swagger, CRUD, validaciones, SQLAlchemy y SQLite.",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -23,7 +23,7 @@ def root():
     return {
         "message": "FastAPI + SQLite funcionando correctamente",
         "docs": "/docs",
-        "redoc": "/redoc"
+        "redoc": "/redoc",
     }
 
 
@@ -34,11 +34,7 @@ def health_check():
 
     Útil para monitoreo, pruebas automáticas y balanceadores.
     """
-    return {
-        "status": "ok",
-        "database": "sqlite",
-        "service": "fastapi_learning_api_sqlite"
-    }
+    return {"status": "ok", "database": "sqlite", "service": "fastapi_learning_api_sqlite"}
 
 
 # Registra las rutas de usuarios.

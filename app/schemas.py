@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class UserCreate(BaseModel):
@@ -21,9 +20,9 @@ class UserUpdate(BaseModel):
     Todos los campos son opcionales para permitir actualización parcial.
     """
 
-    name: Optional[str] = Field(None, min_length=2, max_length=50)
-    email: Optional[str] = Field(None, min_length=5, max_length=100)
-    age: Optional[int] = Field(None, ge=1, le=120)
+    name: str | None = Field(None, min_length=2, max_length=50)
+    email: str | None = Field(None, min_length=5, max_length=100)
+    age: int | None = Field(None, ge=1, le=120)
 
 
 class UserResponse(BaseModel):

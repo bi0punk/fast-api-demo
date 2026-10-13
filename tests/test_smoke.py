@@ -13,4 +13,5 @@ def test_repo_has_gitignore():
 
 def test_app_imports():
     import importlib
-    importlib.import_module("main")
+
+    importlib.import_module("app.main")
